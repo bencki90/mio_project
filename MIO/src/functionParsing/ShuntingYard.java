@@ -3,57 +3,47 @@ package functionParsing;
 import java.util.Stack;
  
 public class ShuntingYard {
- 
-    /*public static void main(String[] args) {
-        String infix = "3 + 4 * 2 / ( 1 - 5 ) ^ 2 ^ 3";
-        System.out.printf("infix:   %s%n", infix);
-        System.out.printf("postfix: %s%n", infixToPostfix(infix));
-    }*/
- 
-    static String infixToPostfix(String infix) {
-        final String ops = "-+/*^";
+
+    public static String infixToPostfix(String infix) {
+
         StringBuilder stringBuilder = new StringBuilder();
-        Stack<Integer> stack = new Stack<>();
+        Stack<Operation> stack = new Stack<>();
         
-        String[] spl = infix.split("\\s");
- 
-        for (String token : spl) {
+        for (String token : infix.split("\\s")) {
             if (token.isEmpty()) continue;
             
             char c = token.charAt(0);
-            int idx = ops.indexOf(c);
+            Operation operation = Operation.matchOperation(token);
  
-            // check for operator
-            if (idx != -1) {
-                if (stack.isEmpty())
-                	stack.push(idx);
- 
-                else {
-                    while (!stack.isEmpty()) {
-                        int prec2 = stack.peek() / 2;
-                        int prec1 = idx / 2;
-                        if (prec2 > prec1 || (prec2 == prec1 && c != '^'))
-                        	stringBuilder.append(ops.charAt(stack.pop())).append(' ');
-                        else break;
-                    }
-                    stack.push(idx);
-                }
+            if (operation == Operation.OPENING_BRACKET) {
+            	stack.push(Operation.OPENING_BRACKET);
             } 
-            else if (c == '(') {
-            	stack.push(-2); // -2 stands for '('
-            } 
-            else if (c == ')') {
+            else if (operation == Operation.CLOSING_BRACKET) {
                 // until '(' on stack, pop operators.
-                while (stack.peek() != -2)
-                	stringBuilder.append(ops.charAt(stack.pop())).append(' ');
+                while (stack.peek() != Operation.OPENING_BRACKET) stringBuilder.append(stack.pop().toString()).append(' ');
+                
                 stack.pop();
             }
+            else if (operation != Operation.NONE) {
+            	
+                if (stack.isEmpty()) stack.push(operation);
+                else {
+                    while (!stack.isEmpty()) {
+                        int stackOperationPriority = stack.peek().precendence;
+                        if (stackOperationPriority > operation.precendence || 
+                        		(stackOperationPriority == operation.precendence && operation.associative == Operation.Associativity.LEFT)) 
+                        	stringBuilder.append(stack.pop().toString()).append(' ');
+                        else break;
+                    }
+                    stack.push(operation);
+                }
+            } 
             else {
             	stringBuilder.append(token).append(' ');
             }
         }
         while (!stack.isEmpty())
-        	stringBuilder.append(ops.charAt(stack.pop())).append(' ');
+        	stringBuilder.append(stack.pop().toString()).append(' ');
         return stringBuilder.toString();
     }
 }

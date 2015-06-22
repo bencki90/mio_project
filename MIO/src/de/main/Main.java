@@ -1,6 +1,7 @@
 package de.main;
 
 import java.util.HashMap;
+import functionParsing.*;
 import java.util.Random;
 
 import pso_1.BirdSwarm;
@@ -15,7 +16,8 @@ public class Main {
 
 	public static void main(String[] args) {
 		
-		ShuntingYard.infixToPostfix("( 3 + 4 * 2 ) * sin ( x1 ) / ( 1 - 5 ) ^ 2 ^ 3");
+		String eoeo = ShuntingYard.infixToPostfix("sin ( 3 + 4 * 2 ) / ( 1 - 5 ) ^ 2 ^ 3");
+		int ikkk = eoeo.length();
 		// TODO Auto-generated method stub
 		/*DEAlgorithm de = new DEAlgorithm();
 		de.generatePopulation();
