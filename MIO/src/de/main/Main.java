@@ -9,12 +9,15 @@ import pso_1.McCormickSwarm;
 import pso_1.SchafferSwarm;
 import pso_1.Swarm;
 import de.algorithm.DEAlgorithm;
+import functionParsing.ShuntingYard;
 
 public class Main {
 
 	public static void main(String[] args) {
+		
+		ShuntingYard.infixToPostfix("( 3 + 4 * 2 ) * sin ( x1 ) / ( 1 - 5 ) ^ 2 ^ 3");
 		// TODO Auto-generated method stub
-		DEAlgorithm de = new DEAlgorithm();
+		/*DEAlgorithm de = new DEAlgorithm();
 		de.generatePopulation();
 		
 		for(int i = 0; i < 100; i++){
@@ -39,7 +42,7 @@ public class Main {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 	}
 	
 	
