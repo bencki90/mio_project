@@ -16,8 +16,8 @@ public class Main {
 
 	public static void main(String[] args) {
 		
-		String eoeo = ShuntingYard.infixToPostfix("sin ( 3 + 4 * 2 ) / ( 1 - 5 ) ^ 2 ^ 3");
-		int ikkk = eoeo.length();
+		String eoeo = ShuntingYard.infixToPostfix("3 + 4 * 2 / ( 1 - 5 ) ^ 2 ^ 3");
+		double result = RPNEvaluator.evalRPN(eoeo);
 		// TODO Auto-generated method stub
 		/*DEAlgorithm de = new DEAlgorithm();
 		de.generatePopulation();

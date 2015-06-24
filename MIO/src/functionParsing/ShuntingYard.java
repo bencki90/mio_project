@@ -3,47 +3,47 @@ package functionParsing;
 import java.util.Stack;
  
 public class ShuntingYard {
-
+ 
     public static String infixToPostfix(String infix) {
-
-        StringBuilder stringBuilder = new StringBuilder();
-        Stack<Operation> stack = new Stack<>();
-        
+        final String ops = "-+/*^";
+        StringBuilder sb = new StringBuilder();
+        Stack<Integer> s = new Stack<>();
+ 
         for (String token : infix.split("\\s")) {
             if (token.isEmpty()) continue;
             
             char c = token.charAt(0);
-            Operation operation = Operation.matchOperation(token);
+            int idx = ops.indexOf(c);
  
-            if (operation == Operation.OPENING_BRACKET) {
-            	stack.push(Operation.OPENING_BRACKET);
-            } 
-            else if (operation == Operation.CLOSING_BRACKET) {
-                // until '(' on stack, pop operators.
-                while (stack.peek() != Operation.OPENING_BRACKET) stringBuilder.append(stack.pop().toString()).append(' ');
-                
-                stack.pop();
-            }
-            else if (operation != Operation.NONE) {
-            	
-                if (stack.isEmpty()) stack.push(operation);
+            // check for operator
+            if (idx != -1) {
+                if (s.isEmpty()) s.push(idx);
+ 
                 else {
-                    while (!stack.isEmpty()) {
-                        int stackOperationPriority = stack.peek().precendence;
-                        if (stackOperationPriority > operation.precendence || 
-                        		(stackOperationPriority == operation.precendence && operation.associative == Operation.Associativity.LEFT)) 
-                        	stringBuilder.append(stack.pop().toString()).append(' ');
+                    while (!s.isEmpty()) {
+                        int prec2 = s.peek() / 2;
+                        int prec1 = idx / 2;
+                        if (prec2 > prec1 || (prec2 == prec1 && c != '^')) sb.append(ops.charAt(s.pop())).append(' ');
                         else break;
                     }
-                    stack.push(operation);
+                    s.push(idx);
                 }
             } 
+            else if (c == '(') {
+                s.push(-2); // -2 stands for '('
+            } 
+            else if (c == ')') {
+                // until '(' on stack, pop operators.
+                while (s.peek() != -2)
+                    sb.append(ops.charAt(s.pop())).append(' ');
+                s.pop();
+            }
             else {
-            	stringBuilder.append(token).append(' ');
+                sb.append(token).append(' ');
             }
         }
-        while (!stack.isEmpty())
-        	stringBuilder.append(stack.pop().toString()).append(' ');
-        return stringBuilder.toString();
+        while (!s.isEmpty())
+            sb.append(ops.charAt(s.pop())).append(' ');
+        return sb.toString();
     }
 }
