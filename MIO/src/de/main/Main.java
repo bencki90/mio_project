@@ -1,7 +1,9 @@
 package de.main;
 
 import java.util.HashMap;
+
 import functionParsing.*;
+
 import java.util.Random;
 
 import pso_1.BirdSwarm;
@@ -15,9 +17,11 @@ import functionParsing.ShuntingYard;
 public class Main {
 
 	public static void main(String[] args) {
-		
-		String eoeo = ShuntingYard.infixToPostfix("3 + 4 * 2 / ( 1 - 5 ) ^ 2 ^ 3");
-		double result = RPNEvaluator.evalRPN(eoeo);
+		try{
+			String eoeo = ShuntingYard.infixToPostfix("3 + 4 * 2 / ( 1 - 5 ) ^ 2 ^ 3");
+			double result = RPNEvaluator.evalRPN(eoeo);
+			System.out.println(result);
+		}catch(Exception ex) {System.out.println(ex.getMessage());}
 		// TODO Auto-generated method stub
 		/*DEAlgorithm de = new DEAlgorithm();
 		de.generatePopulation();

@@ -1,62 +1,87 @@
 package functionParsing;
 
-import java.util.LinkedList;
+import java.util.Stack;
+
+import org.apache.commons.lang3.math.NumberUtils;
  
 public class RPNEvaluator{
-	public static double evalRPN(String expr){
+	
+	private static double getSecondOperand(Stack<String> operandsStack) throws Exception{
+		String operand = operandsStack.pop().toLowerCase();
+		
+		if(NumberUtils.isParsable(operand)) return Double.parseDouble(operand);
+		if(operand.equals("e")) return Math.E;
+		if(operand.equals("pi")) return Math.PI;
+		
+		throw new Exception("Stack is broken!");
+	}
+	
+	private static double getFirstOperand(Stack<String> operandsStack, double secondOperand) throws Exception{
+		String operand = operandsStack.pop().toLowerCase();
+		
+		if(NumberUtils.isParsable(operand)) return Double.parseDouble(operand);
+		if(operand.equals("e")) return Math.E;
+		if(operand.equals("pi")) return Math.PI;
+		
+		if(operand.equals("sin")) return getFirstOperand(operandsStack, Math.sin(secondOperand));
+		if(operand.equals("cos")) return getFirstOperand(operandsStack, Math.cos(secondOperand));
+		
+		throw new Exception("Stack is broken");
+	}
+	
+	public static double evalRPN(String expr) throws Exception{
 
-		LinkedList<Double> stack = new LinkedList<Double>();
-		for(String token : expr.replaceAll("[^\\^\\*\\+\\-\\d/\\s]", "").split("\\s")){
-
-			Double tokenNum = null;
-			/*try{
-				tokenNum = Double.parseDouble(token);
-			}catch(NumberFormatException e){}
+		Stack<String> operandsStack = new Stack<String>();
+		String[] equationElements = expr.split("\\s");
+		
+		for(int i = 0; i < equationElements.length; ++i){
 			
-			if(tokenNum != null){
-
-				stack.push(Double.parseDouble(token + ""));
-			}
-			else{*/
-			try{
-				tokenNum = Double.parseDouble(token);
-				stack.push(tokenNum);
-			}catch(NumberFormatException e) {}
+			String currentElement = equationElements[i].toLowerCase();
+			boolean isOperand = false;
+			
+			switch(currentElement){
+				case "e":
+				case "pi":
+				case "sin":
+				case "cos":
+					operandsStack.push(currentElement);
+					isOperand = true;
+					break;
+				default:
+					if(NumberUtils.isParsable(currentElement)){
+						operandsStack.push(currentElement);
+						isOperand = true;
+					}
+					break;
+			};
+			
+			if(!isOperand){
 				
-			if(tokenNum == null){
-				double secondOperand;
-				double firstOperand;
+				//Order is fine
+				double secondOperand = getSecondOperand(operandsStack);
+				double firstOperand = getFirstOperand(operandsStack, secondOperand);
 				
-				switch(token){
-					case "*":
-						secondOperand = stack.pop();
-						firstOperand = stack.pop();
-						stack.push(firstOperand * secondOperand);
-						break;
-					case "/":
-						secondOperand = stack.pop();
-						firstOperand = stack.pop();
-						stack.push(firstOperand / secondOperand);
+				switch(currentElement){
+					case "+":
+						operandsStack.push(String.valueOf(firstOperand + secondOperand));
 						break;
 					case "-":
-						secondOperand = stack.pop();
-						firstOperand = stack.pop();
-						stack.push(firstOperand - secondOperand);
+						operandsStack.push(String.valueOf(firstOperand - secondOperand));
 						break;
-					case "+":
-						secondOperand = stack.pop();
-						firstOperand = stack.pop();
-						stack.push(firstOperand + secondOperand);
+					case "*":
+						operandsStack.push(String.valueOf(firstOperand * secondOperand));
+						break;
+					case "/":
+						operandsStack.push(String.valueOf(firstOperand / secondOperand));
 						break;
 					case "^":
-						secondOperand = stack.pop();
-						firstOperand = stack.pop();
-						stack.push(Math.pow(firstOperand, secondOperand));
+						operandsStack.push(String.valueOf(Math.pow(firstOperand, secondOperand)));
 						break;
-					
 				};
 			}
+			System.out.println(operandsStack);
 		}
-		return stack.pop();
+		
+		return Double.parseDouble(operandsStack.pop());
 	}
 }
