@@ -9,24 +9,22 @@ public class RPNEvaluator{
 	private static double getSecondOperand(Stack<String> operandsStack) throws Exception{
 		String operand = operandsStack.pop().toLowerCase();
 		
-		if(NumberUtils.isParsable(operand)) return Double.parseDouble(operand);
 		if(operand.equals("e")) return Math.E;
 		if(operand.equals("pi")) return Math.PI;
 		
-		throw new Exception("Stack is broken!");
+		return Double.valueOf(operand);
 	}
 	
 	private static double getFirstOperand(Stack<String> operandsStack, double secondOperand) throws Exception{
 		String operand = operandsStack.pop().toLowerCase();
-		
-		if(NumberUtils.isParsable(operand)) return Double.parseDouble(operand);
+
 		if(operand.equals("e")) return Math.E;
 		if(operand.equals("pi")) return Math.PI;
-		
 		if(operand.equals("sin")) return getFirstOperand(operandsStack, Math.sin(secondOperand));
 		if(operand.equals("cos")) return getFirstOperand(operandsStack, Math.cos(secondOperand));
 		
-		throw new Exception("Stack is broken");
+		return Double.valueOf(operand);
+
 	}
 	
 	public static double evalRPN(String expr) throws Exception{

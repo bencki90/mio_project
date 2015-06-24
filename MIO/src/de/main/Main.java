@@ -40,7 +40,7 @@ public class Main {
 		a[0] = -1.57;
 		Random random = new Random();
 		System.out.println((int) (random.nextDouble() * (double) (30 - 1)));
-		System.out.println(de.fitnessFunction(a));
+		System.out.println(de.fitnessFunction(a));*/
 		
 		
 		try {
@@ -48,7 +48,7 @@ public class Main {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}*/
+		}
 	}
 	
 	
