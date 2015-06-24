@@ -1,6 +1,9 @@
 package de.main;
 
 import java.util.HashMap;
+
+import functionParsing.*;
+
 import java.util.Random;
 
 import pso_1.BirdSwarm;
@@ -9,12 +12,18 @@ import pso_1.McCormickSwarm;
 import pso_1.SchafferSwarm;
 import pso_1.Swarm;
 import de.algorithm.DEAlgorithm;
+import functionParsing.ShuntingYard;
 
 public class Main {
 
 	public static void main(String[] args) {
+		try{
+			String eoeo = ShuntingYard.infixToPostfix("3 + 4 * 2 / ( 1 - 5 ) ^ 2 ^ 3");
+			double result = RPNEvaluator.evalRPN(eoeo);
+			System.out.println(result);
+		}catch(Exception ex) {System.out.println(ex.getMessage());}
 		// TODO Auto-generated method stub
-		DEAlgorithm de = new DEAlgorithm();
+		/*DEAlgorithm de = new DEAlgorithm();
 		de.generatePopulation();
 		
 		for(int i = 0; i < 100; i++){
@@ -31,7 +40,7 @@ public class Main {
 		a[0] = -1.57;
 		Random random = new Random();
 		System.out.println((int) (random.nextDouble() * (double) (30 - 1)));
-		System.out.println(de.fitnessFunction(a));
+		System.out.println(de.fitnessFunction(a));*/
 		
 		
 		try {
