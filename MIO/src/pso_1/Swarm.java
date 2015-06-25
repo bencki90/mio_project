@@ -3,8 +3,10 @@ package pso_1;
 import java.util.HashMap;
 import java.util.Random;
 
+import functionParsing.RPNEvaluator;
 
-public abstract class Swarm {
+
+public /*abstract*/ class Swarm {
 	private Particle[] particles;
     private HashMap<String, Double> bestKnownPosition;
     private HashMap<String, Dimension> dimensions;
@@ -13,6 +15,7 @@ public abstract class Swarm {
     private double C1;
     private double C2;
     private Random rand;
+    private String functionRPN;
     
     public enum Operation{
     	Minimize,
@@ -20,7 +23,8 @@ public abstract class Swarm {
     }
 
     
-	public Swarm(int particlesNumber, HashMap<String, Dimension> dimensions, Operation operation, double C1, double C2){
+	public Swarm(String functionRPN, int particlesNumber, HashMap<String, Dimension> dimensions, Operation operation, double C1, double C2) throws Exception{
+		this.functionRPN = functionRPN;
         this.dimensions = dimensions;
         this.initBestKnownPositionAndValue();
         this.initParticles(particlesNumber);
@@ -30,7 +34,16 @@ public abstract class Swarm {
         rand = new Random();
     }
 	
-	public abstract double fitnessFunction(HashMap<String, Double> vars);
+	//public abstract double fitnessFunction(HashMap<String, Double> vars);
+	
+	public double fitnessFunction(HashMap<String, Double> vars) throws Exception{
+		String expr = this.functionRPN;
+		for(String key : vars.keySet()){
+			expr = expr.replaceAll(key, RPNEvaluator.df.format(vars.get(key)));
+		}
+		
+		return RPNEvaluator.evalRPN(expr);
+	}
 	
     public Particle[] getParticles() {
 		return particles;
@@ -65,13 +78,13 @@ public abstract class Swarm {
 		}
 	}
 	
-	private Particle newPartcle(HashMap<String, Double> position, HashMap<String, Double> velocity){
+	private Particle newPartcle(HashMap<String, Double> position, HashMap<String, Double> velocity) throws Exception{
 		Particle particle = new Particle(position, velocity, this.fitnessFunction(position), this.operation);
 		this.updateBestKnownPositionAndValue(particle);
 		return particle;
 	}
 	
-	private void initBestKnownPositionAndValue(){
+	private void initBestKnownPositionAndValue() throws Exception{
 		HashMap<String, Double> position = new HashMap<String, Double>();
 		for (String key : this.dimensions.keySet()) {
 			
@@ -82,7 +95,7 @@ public abstract class Swarm {
         this.bestKnownPosition = position;
         this.bestKnownValue = fitnessFunction(position);
 	}
-	private void initParticles(int particlesNumber){
+	private void initParticles(int particlesNumber) throws Exception{
         Random rand = new Random();
         this.particles = new Particle[particlesNumber];
         
@@ -102,7 +115,7 @@ public abstract class Swarm {
         }
 	}
 	
-	public void makeIteration(){
+	public void makeIteration() throws Exception{
 
 		for(int i = 0; i < this.getParticles().length; ++i){
 			

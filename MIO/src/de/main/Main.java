@@ -17,11 +17,6 @@ import functionParsing.ShuntingYard;
 public class Main {
 
 	public static void main(String[] args) {
-		try{
-			String eoeo = ShuntingYard.infixToPostfix("3 + 4 * 2 / ( 1 - 5 ) ^ 2 ^ 3");
-			double result = RPNEvaluator.evalRPN(eoeo);
-			System.out.println(result);
-		}catch(Exception ex) {System.out.println(ex.getMessage());}
 		// TODO Auto-generated method stub
 		/*DEAlgorithm de = new DEAlgorithm();
 		de.generatePopulation();
@@ -54,7 +49,7 @@ public class Main {
 	
 	public static void PSO() throws Exception{
 		//McCormick function
-		HashMap<String, Dimension> mcCormickDimensions = new HashMap<String, Dimension>();
+		/*HashMap<String, Dimension> mcCormickDimensions = new HashMap<String, Dimension>();
 		mcCormickDimensions.put("x", new Dimension(-1.5, 4));
 		mcCormickDimensions.put("y", new Dimension(-3, 4));
 		Swarm mcCormickSwarm = new McCormickSwarm(15, mcCormickDimensions, Swarm.Operation.Minimize, 2.0, 2.0);
@@ -98,7 +93,46 @@ public class Main {
 		bestPoints = birdSwarm.getBestKnownPosition();
 		for(String key : bestPoints.keySet()){
 			System.out.format(key + ": %f.6\n", bestPoints.get(key));
+		}*/
+
+		RPNEvaluator.initDecimalformat();
+		String bird = "sin ( x1 ) * e ^ ( 1 - cos ( x2 ) ) ^ 2 + cos ( x2 ) * e ^ ( 1 - sin ( x1 ) ) ^ 2 + ( x1 - x2 ) ^ 2";
+		String birdRPN = ShuntingYard.infixToPostfix(bird);
+		
+		
+		//Bird function:
+		HashMap<String, Dimension> birdDimensions = new HashMap<String, Dimension>();
+		birdDimensions.put("x1", new Dimension(-2 * Math.PI, 2 * Math.PI));
+		birdDimensions.put("x2", new Dimension(-2 * Math.PI, 2 * Math.PI));
+		Swarm birdSwarm = new Swarm(birdRPN, 50, birdDimensions, Swarm.Operation.Minimize, 2.0, 2.0);
+		
+		for(int i = 0; i < 50; ++i){
+			birdSwarm.makeIteration();
+			
 		}
+		
+		System.out.println("Bird: Best value: " + birdSwarm.getBestKnownValue());
+		HashMap<String, Double> bestPoints = birdSwarm.getBestKnownPosition();
+		for(String key : bestPoints.keySet()){
+			System.out.format(key + ": %f.6\n", bestPoints.get(key));
+		}
+		
+		//Bird function: (old way)
+		/*HashMap<String, Dimension> birdDimensions = new HashMap<String, Dimension>();
+		birdDimensions.put("x1", new Dimension(-2 * Math.PI, 2 * Math.PI));
+		birdDimensions.put("x2", new Dimension(-2 * Math.PI, 2 * Math.PI));*/
+		/*Swarm birdSwarmOld = new BirdSwarm(30, birdDimensions, Swarm.Operation.Minimize, 2.0, 2.0);
+
+
+		for(int i = 0; i < 50; ++i){
+			birdSwarmOld.makeIteration();
+		}
+
+		System.out.println("Bird: Best value: " + birdSwarmOld.getBestKnownValue());
+		HashMap<String, Double> bestPoints = birdSwarmOld.getBestKnownPosition();
+		for(String key : bestPoints.keySet()){
+			System.out.format(key + ": %f.6\n", bestPoints.get(key));
+		}*/
 	}
 
 }
