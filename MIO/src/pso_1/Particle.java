@@ -1,17 +1,18 @@
 package pso_1;
+
 import java.util.HashMap;
 
-import pso_1.Swarm.Operation;
+import de.main.Operation;
 
 public class Particle {
 	private HashMap<String, Double> currentPosition;
 	private HashMap<String, Double> bestKnownPosition;
 	private double bestKnownValue;
 	private HashMap<String, Double> velocity;
-	private Swarm.Operation operation;
+	private Operation operation;
 	
 
-	public Particle(HashMap<String, Double> position, HashMap<String, Double> velocity, double value, Swarm.Operation operation){
+	public Particle(HashMap<String, Double> position, HashMap<String, Double> velocity, double value, Operation operation){
 		this.currentPosition = this.bestKnownPosition = position;
 		this.bestKnownValue = value;
 		this.velocity = velocity;

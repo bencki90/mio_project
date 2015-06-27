@@ -1,120 +1,137 @@
 package de.algorithm;
 
+import java.util.HashMap;
 import java.util.Random;
 
+import pso_1.PSODimension;
+import de.main.Dimension;
+import de.main.Operation;
+import functionParsing.RPNEvaluator;
+
 public class DEAlgorithm {
-	//liczba osobników w populacji (P * 5 lub 10)
-	private final int NP;
-	//liczba parametrów wektora
-	private final int P;
-	//wspó³czynnik mutacji <0, 1.2> optymalnie 0.5 - 1.0
+	private final HashMap<String, Dimension> dimensions;
 	private final double F;
-	//wspó³czynnik krzy¿owania <0, 1.0> 0.1, 0.9 i 1.0
 	private final double CR;
-	//bie¿¹ca populacja 
-	private double population[][];
+	private Individual[] population;
 	
-	private double candidateVector[];
+	private final String functionRPN;
+	private final Operation operation;
 	
-	//liczby losowe
-	private Random random = new Random();
-	private long seed = (long) System.currentTimeMillis();
+	private Random random;
 	
-	public DEAlgorithm() {
-		this.P = 2;
-		this.NP = 50;
-		this.F = 0.5;
-		this.CR = 0.1;
-		this.population = new double[this.NP][this.P];
-		this.candidateVector = new double[this.P];
-	}
-	
-	public DEAlgorithm(int P, int NP, double F, double CR) {
-		this.P = P;
-		this.NP = NP;
+	public DEAlgorithm(String functionRPN, final int populationSize, final HashMap<String, Dimension> dimensions, final Operation operation, final double F, final double CR) {
+		this.functionRPN = functionRPN;
+		this.dimensions = dimensions;
+		this.operation = operation;
 		this.F = F;
 		this.CR = CR;
-		this.population = new double[this.NP][this.P];
-		this.candidateVector = new double[this.P];
+
+		this.random = new Random();
+		this.InitializePopulation(populationSize);
 	}
-	
-	public void generatePopulation() {
-		this.random.setSeed(this.seed);
+
+
+	public void InitializePopulation(final int populationSize) {
 		
-		for(int i = 0; i < this.NP; i++){
-			System.out.print("Vector " + (i + 1) + ": ");
-			for(int j = 0; j < this.P; j++){
-				this.population[i][j] = (random.nextDouble() * (4*Math.PI)) - (2*Math.PI);
-				System.out.print(this.population[i][j] + " ");
+		this.population = new Individual[populationSize];
+		
+		for(int i = 0; i < populationSize; ++i){
+			
+			HashMap<String, Double> position = new HashMap<String, Double>();
+			
+			for (String key : this.dimensions.keySet()) {
+        		Dimension dimension = dimensions.get(key);
+        		
+	        	position.put(key, (random.nextDouble() * (dimension.getMaxBoundary() - dimension.getMinBoundary()) + dimension.getMinBoundary()));
 			}
-			System.out.println();
+			
+			this.population[i] = new Individual(position);
 		}
 	}
 	
-	public void makeEvolution() {
-		for(int i = 0; i < this.NP; i++) {
-			int x = (int) (random.nextDouble() * (double) (this.NP - 1));
+	public void makeEvolution() throws Exception {
+		for(int i = 0; i < this.population.length; ++i) {
+			
+			int x = (int) (random.nextDouble() * (double) (this.population.length - 1));
 			int a, b, c;
 			
 			do{
-				a = (int) (random.nextDouble() * (double) (this.NP - 1));
+				a = (int) (random.nextDouble() * (double) (this.population.length - 1));
 			}while(a == x);
 			
 			do{
-				b = (int) (random.nextDouble() * (double) (this.NP - 1));
+				b = (int) (random.nextDouble() * (double) (this.population.length - 1));
 			}while(b == x || b == a);
 			
 			do{
-				c = (int) (random.nextDouble() * (double) (this.NP - 1));
+				c = (int) (random.nextDouble() * (double) (this.population.length - 1));
 			}while(c == x || c == a || c == b);
 			
-			int R = random.nextInt(this.P + 1);
+			int R = random.nextInt(this.dimensions.size() + 1);
 			
-			this.candidateVector = this.population[x];
+			Individual individualCandidate = new Individual(this.population[x]);
+			
+			
+			
+			for(String key : this.dimensions.keySet()){
+				if(random.nextInt(this.dimensions.size() + 1) == R || random.nextDouble() * 1 < this.CR) {
+					
+					individualCandidate.setPosition(key, this.population[a].getPosition(key) + this.F * (this.population[b].getPosition(key) - this.population[c].getPosition(key)));
+				}
+			}
 
-			if(random.nextInt(this.P + 1) == R || random.nextDouble() * 1 < this.CR) {
-				this.candidateVector[0] = this.population[a][0] + this.F * (this.population[b][0] - this.population[c][0]); 
+			if(this.operation == Operation.Minimize){
+				if(this.fitnessFunction(this.population[x].getPosition()) > this.fitnessFunction(individualCandidate.getPosition())){
+					this.population[x] = individualCandidate;
+				}
+			}
+			else{
+				if(this.fitnessFunction(this.population[x].getPosition()) < this.fitnessFunction(individualCandidate.getPosition())){
+					this.population[x] = individualCandidate;
+				}
 			}
 			
-			if(random.nextInt(this.P + 1) == R || random.nextDouble() * 1 < this.CR) {
-				this.candidateVector[1] = this.population[a][1] + this.F * (this.population[b][1] - this.population[c][1]); 
-			}
-			
-//			if(((random.nextInt() * this.P) - 1) == R || random.nextDouble() * 1 < this.CR) {
-//				this.candidateVector[2] = this.population[a][2] + this.F * (this.population[b][2] - this.population[c][2]); 
-//			}
-			
-			if(this.fitnessFunction(this.population[x]) > this.fitnessFunction(candidateVector)){
-				this.population[x] = this.candidateVector;
-			}
 		}
 	}
 	
-	public double fitnessFunction(double vector[]) {
-		//funkcja do sprawdzenia 
-		double f = Math.sin(vector[0])*Math.exp(Math.pow(1-Math.cos(vector[1]), 2)) + Math.cos(vector[1])*Math.exp(Math.pow(1-Math.sin(vector[0]), 2)) + Math.pow(vector[0] - vector[1], 2);
-		return f;
+	public double fitnessFunction(HashMap<String, Double> vars) throws Exception{
+		String expr = this.functionRPN;
+		for(String key : vars.keySet()){
+			expr = expr.replaceAll(key, RPNEvaluator.df.format(vars.get(key)));
+		}
+		
+		return RPNEvaluator.evalRPN(expr);
 	}
 	
-	public double[] bestFitness(){
-		double[] bestFitness = new double[this.P];
-		bestFitness = this.population[0];
-		for(int i = 1; i < this.NP; i++){
-			if(this.fitnessFunction(bestFitness) < this.fitnessFunction(this.population[i])){
-				bestFitness = this.population[i];
+	public HashMap<String, Double> bestPosition() throws Exception{
+		HashMap<String, Double> best = this.population[0].getPosition();
+		for(int i = 1; i < this.population.length; ++i){
+			if(this.operation == Operation.Minimize){
+				if(this.fitnessFunction(this.population[i].getPosition()) < this.fitnessFunction(best)){
+					best = this.population[i].getPosition();
+				}
+			}
+			else{
+				if(this.fitnessFunction(this.population[i].getPosition()) > this.fitnessFunction(best)){
+					best = this.population[i].getPosition();
+				}
 			}
 		}
-		return bestFitness;
+		return best;
 	}
 	
-	public void printResults(){
-		System.out.println("########### RESULT ############");
-		for(int i = 0; i < this.NP; i++){
-			System.out.print("Vector " + (i + 1) + ": ");
-			for(int j = 0; j < this.P; j++){
-				System.out.print(this.population[i][j] + " ");	
+	public double bestValue() throws Exception{
+		return this.fitnessFunction(this.bestPosition());
+	}
+	
+	public void printResults() throws Exception{
+		System.out.println("############ RESULT ############");
+		for(int i = 0; i < this.population.length; ++i){
+			System.out.print("Individual " + (i + 1) + ": ");
+
+			for(String key : this.population[i].getPosition().keySet()){
+				System.out.format(key + ": %f.6\t", this.population[i].getPosition(key));
 			}
-			System.out.print(" f(x*) = " + this.fitnessFunction(this.population[i]));
 			System.out.println();
 		}
 	}

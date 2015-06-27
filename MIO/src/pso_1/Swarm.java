@@ -3,27 +3,23 @@ package pso_1;
 import java.util.HashMap;
 import java.util.Random;
 
+import de.main.Operation;
 import functionParsing.RPNEvaluator;
 
 
-public /*abstract*/ class Swarm {
+public class Swarm {
 	private Particle[] particles;
     private HashMap<String, Double> bestKnownPosition;
-    private HashMap<String, Dimension> dimensions;
+    private final HashMap<String, PSODimension> dimensions;
     private double bestKnownValue;
-    public Operation operation;
-    private double C1;
-    private double C2;
+    public final Operation operation;
+    private final double C1;
+    private final double C2;
     private Random rand;
-    private String functionRPN;
+    private final String functionRPN;
     
-    public enum Operation{
-    	Minimize,
-    	Maximize
-    }
-
     
-	public Swarm(String functionRPN, int particlesNumber, HashMap<String, Dimension> dimensions, Operation operation, double C1, double C2) throws Exception{
+	public Swarm(String functionRPN, int particlesNumber, HashMap<String, PSODimension> dimensions, Operation operation, double C1, double C2) throws Exception{
 		this.functionRPN = functionRPN;
         this.dimensions = dimensions;
         this.initBestKnownPositionAndValue();
@@ -33,8 +29,6 @@ public /*abstract*/ class Swarm {
         this.C2 = C2;
         rand = new Random();
     }
-	
-	//public abstract double fitnessFunction(HashMap<String, Double> vars);
 	
 	public double fitnessFunction(HashMap<String, Double> vars) throws Exception{
 		String expr = this.functionRPN;
@@ -88,7 +82,7 @@ public /*abstract*/ class Swarm {
 		HashMap<String, Double> position = new HashMap<String, Double>();
 		for (String key : this.dimensions.keySet()) {
 			
-			Dimension dimension = dimensions.get(key);
+			PSODimension dimension = dimensions.get(key);
 			position.put(key, ((dimension.getMinBoundary() + dimension.getMaxBoundary())/2.0));
 		}
 		
@@ -105,7 +99,7 @@ public /*abstract*/ class Swarm {
             HashMap<String, Double> velocity = new HashMap<String, Double>();
         	
         	for (String key : this.dimensions.keySet()) {
-	        	Dimension dimension = dimensions.get(key);
+        		PSODimension dimension = dimensions.get(key);
 	        	position.put(key, (rand.nextDouble() * (dimension.getMaxBoundary() - dimension.getMinBoundary()) + dimension.getMinBoundary()));
 				
 				velocity.put(key, 0.0);

@@ -53,7 +53,6 @@ public class RPNEvaluator{
 	public static double evalRPN(String expr) throws Exception{
 
 		Stack<String> operandsStack = new Stack<String>();
-		System.out.println(expr);
 		String[] equationElements = expr.split("\\s");
 		
 		for(int i = 0; i < equationElements.length; ++i){
