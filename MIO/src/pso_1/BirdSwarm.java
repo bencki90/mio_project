@@ -7,7 +7,7 @@ public class BirdSwarm extends Swarm{
 	public BirdSwarm(int particlesNumber,
 			HashMap<String, Dimension> dimensions, Operation operation,
 			double C1, double C2) throws Exception {
-		super(particlesNumber, dimensions, operation, C1, C2);
+		super("", particlesNumber, dimensions, operation, C1, C2);
 		// TODO Auto-generated constructor stub
 	}
 

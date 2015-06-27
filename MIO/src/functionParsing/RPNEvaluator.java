@@ -1,35 +1,59 @@
 package functionParsing;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Stack;
 
 import org.apache.commons.lang3.math.NumberUtils;
  
 public class RPNEvaluator{
+	public static DecimalFormat df = new DecimalFormat("0");
+	public static DecimalFormatSymbols dfs = new DecimalFormatSymbols();
 	
-	private static double getSecondOperand(Stack<String> operandsStack) throws Exception{
-		String operand = operandsStack.pop().toLowerCase();
-		
-		if(operand.equals("e")) return Math.E;
-		if(operand.equals("pi")) return Math.PI;
-		
-		return Double.valueOf(operand);
+	public static void initDecimalformat(){
+		df.setMaximumFractionDigits(340);
+		dfs.setDecimalSeparator('.');
+		df.setDecimalFormatSymbols(dfs);
 	}
-	
-	private static double getFirstOperand(Stack<String> operandsStack, double secondOperand) throws Exception{
+			
+	private static double getOperand(Stack<String> operandsStack) throws Exception{
 		String operand = operandsStack.pop().toLowerCase();
-
-		if(operand.equals("e")) return Math.E;
-		if(operand.equals("pi")) return Math.PI;
-		if(operand.equals("sin")) return getFirstOperand(operandsStack, Math.sin(secondOperand));
-		if(operand.equals("cos")) return getFirstOperand(operandsStack, Math.cos(secondOperand));
 		
-		return Double.valueOf(operand);
-
+		double valueToReturn = Double.NaN;
+		
+		switch(operand){
+		case "e":
+			valueToReturn = Math.E;
+			break;
+		case "pi":
+			valueToReturn = Math.PI;
+			break;
+		default:
+			valueToReturn = Double.valueOf(operand);
+			break;
+		};
+		
+		while(!operandsStack.isEmpty()){
+			switch(operandsStack.peek().toLowerCase()){
+				case "sin":
+					operandsStack.pop();
+					valueToReturn = Math.sin(valueToReturn);
+					break;
+				case "cos":
+					operandsStack.pop();
+					valueToReturn = Math.cos(valueToReturn);
+					break;
+				default:
+					return valueToReturn;
+			};
+		}
+		return valueToReturn;
 	}
 	
 	public static double evalRPN(String expr) throws Exception{
 
 		Stack<String> operandsStack = new Stack<String>();
+		System.out.println(expr);
 		String[] equationElements = expr.split("\\s");
 		
 		for(int i = 0; i < equationElements.length; ++i){
@@ -56,30 +80,28 @@ public class RPNEvaluator{
 			if(!isOperand){
 				
 				//Order is fine
-				double secondOperand = getSecondOperand(operandsStack);
-				double firstOperand = getFirstOperand(operandsStack, secondOperand);
+				double secondOperand = getOperand(operandsStack);
+				double firstOperand = getOperand(operandsStack);
 				
 				switch(currentElement){
 					case "+":
-						operandsStack.push(String.valueOf(firstOperand + secondOperand));
+						operandsStack.push(df.format(firstOperand + secondOperand));
 						break;
 					case "-":
-						operandsStack.push(String.valueOf(firstOperand - secondOperand));
+						operandsStack.push(df.format(firstOperand - secondOperand));
 						break;
 					case "*":
-						operandsStack.push(String.valueOf(firstOperand * secondOperand));
+						operandsStack.push(df.format(firstOperand * secondOperand));
 						break;
 					case "/":
-						operandsStack.push(String.valueOf(firstOperand / secondOperand));
+						operandsStack.push(df.format(firstOperand / secondOperand));
 						break;
 					case "^":
-						operandsStack.push(String.valueOf(Math.pow(firstOperand, secondOperand)));
+						operandsStack.push(df.format(Math.pow(firstOperand, secondOperand)));
 						break;
 				};
 			}
-			System.out.println(operandsStack);
 		}
-		
-		return Double.parseDouble(operandsStack.pop());
+		return getOperand(operandsStack);
 	}
 }
