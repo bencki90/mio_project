@@ -1,13 +1,15 @@
-package pso_1;
+package algorithms.PSO;
 
 import java.util.HashMap;
 import java.util.Random;
 
-import de.main.Operation;
+import algorithms.common.IEvolutionaryAlgorithm;
+import algorithms.common.Individual;
+import algorithms.common.Operation;
 import functionParsing.RPNEvaluator;
 
 
-public class Swarm {
+public class Swarm implements IEvolutionaryAlgorithm {
 	private Particle[] particles;
     private HashMap<String, Double> bestKnownPosition;
     private final HashMap<String, PSODimension> dimensions;
@@ -109,7 +111,7 @@ public class Swarm {
         }
 	}
 	
-	public void makeIteration() throws Exception{
+	public void makeIteration(){
 
 		for(int i = 0; i < this.getParticles().length; ++i){
 			
@@ -119,8 +121,8 @@ public class Swarm {
 				
 				double maxVelocity = dimensions.get(key).getMaxVelocity();
 				double newVelocity = particle.getVelocity(key) + 
-						C1 * rand.nextDouble() * (particle.getBestKnownPosition(key) - particle.getCurrentPosition(key)) + 
-						C2 * rand.nextDouble() * (this.getBestKnownPosition(key) - particle.getCurrentPosition(key));
+						C1 * rand.nextDouble() * (particle.getBestKnownPosition(key) - particle.getPosition(key)) + 
+						C2 * rand.nextDouble() * (this.getBestKnownPosition(key) - particle.getPosition(key));
 				
 				if(newVelocity > maxVelocity) newVelocity = maxVelocity;
 				else if(newVelocity < (maxVelocity * -1)) newVelocity = -maxVelocity;
@@ -130,15 +132,32 @@ public class Swarm {
 			
 			HashMap<String, Double> newPosition = new HashMap<String, Double>();
 			for(String key : particle.getBestKnownPosition().keySet()){
-				double newPositionInDimension = particle.getCurrentPosition(key) + particle.getVelocity(key);
+				double newPositionInDimension = particle.getPosition(key) + particle.getVelocity(key);
 				
 				if(newPositionInDimension > dimensions.get(key).getMaxBoundary()) newPositionInDimension = dimensions.get(key).getMaxBoundary();
 				if(newPositionInDimension < dimensions.get(key).getMinBoundary()) newPositionInDimension = dimensions.get(key).getMinBoundary();
 				
 				newPosition.put(key, newPositionInDimension);
 			}
-			particle.setCurrentPosition(newPosition, this.fitnessFunction(newPosition));
+			try {
+				particle.setCurrentPosition(newPosition, this.fitnessFunction(newPosition));
+			} catch (Exception e) {}
 			this.updateBestKnownPositionAndValue(particle);
 		}
+	}
+
+	@Override
+	public Individual[] getPopulation() {
+		return this.particles;
+	}
+
+	@Override
+	public double getBestValue() {
+		return this.getBestKnownValue();
+	}
+
+	@Override
+	public HashMap<String, Double> getBestPosition() {
+		return getBestKnownPosition();
 	}
 }

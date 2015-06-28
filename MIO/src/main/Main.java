@@ -1,11 +1,13 @@
-package de.main;
+package main;
 
 import java.util.HashMap;
 import java.util.Random;
 
-import pso_1.PSODimension;
-import pso_1.Swarm;
-import de.algorithm.DEAlgorithm;
+import algorithms.DE.DEAlgorithm;
+import algorithms.PSO.PSODimension;
+import algorithms.PSO.Swarm;
+import algorithms.common.Dimension;
+import algorithms.common.Operation;
 import functionParsing.ShuntingYard;
 import functionParsing.RPNEvaluator;
 
@@ -22,30 +24,30 @@ public class Main {
 		birdDimensions.put("x1", new Dimension(-2 * Math.PI, 2 * Math.PI));
 		birdDimensions.put("x2", new Dimension(-2 * Math.PI, 2 * Math.PI));
 		
-		try{
+		/*try{
 			DEAlgorithm de = new DEAlgorithm(birdRPN, 50, birdDimensions, Operation.Minimize, 0.5, 0.1);
 			
 			for(int i = 0; i < 100; i++){
-				de.makeEvolution();
+				de.makeIteration();
 			}
 			
 			de.printResults();
 			
-			HashMap<String, Double> b = de.bestPosition();
-			System.out.println("Bird: Best value: " + de.bestValue());
+			HashMap<String, Double> b = de.getBestPosition();
+			System.out.println("Bird: Best value: " + de.getBestValue());
 			for(String key : b.keySet()){
 				System.out.print(b.get(key) + " ");
 			}
 		}
-		catch(Exception ex) { }
+		catch(Exception ex) { }*/
 		
 		
-		/*try {
+		try {
 			PSO();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}*/
+		}
 	}
 	
 	

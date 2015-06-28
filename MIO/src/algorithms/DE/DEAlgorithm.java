@@ -1,14 +1,16 @@
-package de.algorithm;
+package algorithms.DE;
 
 import java.util.HashMap;
 import java.util.Random;
 
-import pso_1.PSODimension;
-import de.main.Dimension;
-import de.main.Operation;
+import algorithms.PSO.PSODimension;
+import algorithms.common.Dimension;
+import algorithms.common.IEvolutionaryAlgorithm;
+import algorithms.common.Individual;
+import algorithms.common.Operation;
 import functionParsing.RPNEvaluator;
 
-public class DEAlgorithm {
+public class DEAlgorithm implements IEvolutionaryAlgorithm{
 	private final HashMap<String, Dimension> dimensions;
 	private final double F;
 	private final double CR;
@@ -31,7 +33,7 @@ public class DEAlgorithm {
 	}
 
 
-	public void InitializePopulation(final int populationSize) {
+	private void InitializePopulation(final int populationSize) {
 		
 		this.population = new Individual[populationSize];
 		
@@ -49,7 +51,7 @@ public class DEAlgorithm {
 		}
 	}
 	
-	public void makeEvolution() throws Exception {
+	private void makeEvolution() throws Exception {
 		for(int i = 0; i < this.population.length; ++i) {
 			
 			int x = (int) (random.nextDouble() * (double) (this.population.length - 1));
@@ -94,7 +96,7 @@ public class DEAlgorithm {
 		}
 	}
 	
-	public double fitnessFunction(HashMap<String, Double> vars) throws Exception{
+	private double fitnessFunction(HashMap<String, Double> vars) throws Exception{
 		String expr = this.functionRPN;
 		for(String key : vars.keySet()){
 			expr = expr.replaceAll(key, RPNEvaluator.df.format(vars.get(key)));
@@ -103,7 +105,7 @@ public class DEAlgorithm {
 		return RPNEvaluator.evalRPN(expr);
 	}
 	
-	public HashMap<String, Double> bestPosition() throws Exception{
+	private HashMap<String, Double> bestPosition() throws Exception{
 		HashMap<String, Double> best = this.population[0].getPosition();
 		for(int i = 1; i < this.population.length; ++i){
 			if(this.operation == Operation.Minimize){
@@ -120,7 +122,7 @@ public class DEAlgorithm {
 		return best;
 	}
 	
-	public double bestValue() throws Exception{
+	private double bestValue() throws Exception{
 		return this.fitnessFunction(this.bestPosition());
 	}
 	
@@ -133,6 +135,42 @@ public class DEAlgorithm {
 				System.out.format(key + ": %f.6\t", this.population[i].getPosition(key));
 			}
 			System.out.println();
+		}
+	}
+
+
+	@Override
+	public void makeIteration() {
+		try{
+			this.makeEvolution();
+		}
+		catch(Exception ex) {}
+	}
+
+
+	@Override
+	public Individual[] getPopulation() {
+		return this.population;
+	}
+
+
+	@Override
+	public double getBestValue() {
+		try{
+			return this.bestValue();
+		}
+		catch(Exception ex) {
+			return Double.NaN;
+		}
+	}
+
+
+	@Override
+	public HashMap<String, Double> getBestPosition() {
+		try {
+			return this.bestPosition();
+		} catch (Exception e) { 
+			return null;
 		}
 	}
 	

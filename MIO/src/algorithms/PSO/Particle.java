@@ -1,11 +1,10 @@
-package pso_1;
+package algorithms.PSO;
 
 import java.util.HashMap;
 
-import de.main.Operation;
+import algorithms.common.Operation;
 
-public class Particle {
-	private HashMap<String, Double> currentPosition;
+public class Particle extends algorithms.common.Individual {
 	private HashMap<String, Double> bestKnownPosition;
 	private double bestKnownValue;
 	private HashMap<String, Double> velocity;
@@ -13,7 +12,8 @@ public class Particle {
 	
 
 	public Particle(HashMap<String, Double> position, HashMap<String, Double> velocity, double value, Operation operation){
-		this.currentPosition = this.bestKnownPosition = position;
+		super(position);
+		this.bestKnownPosition = position;
 		this.bestKnownValue = value;
 		this.velocity = velocity;
 		this.operation = operation;
@@ -21,13 +21,6 @@ public class Particle {
 	
 	public double getBestKnownValue() {
 		return bestKnownValue;
-	}
-	
-	public HashMap<String, Double> getCurrentPosition() {
-		return currentPosition;
-	}
-	public double getCurrentPosition(String key) {
-		return currentPosition.get(key);
 	}
 
 	public void setCurrentPosition(HashMap<String, Double> newPosition, double newValue) {

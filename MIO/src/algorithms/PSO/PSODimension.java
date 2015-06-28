@@ -1,6 +1,6 @@
-package pso_1;
+package algorithms.PSO;
 
-import de.main.Dimension;
+import algorithms.common.Dimension;
 
 public class PSODimension extends Dimension{
 	private final double maxVelocity;
