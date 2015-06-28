@@ -24,14 +24,24 @@ public class Main {
 		birdDimensions.put("x1", new Dimension(-2 * Math.PI, 2 * Math.PI));
 		birdDimensions.put("x2", new Dimension(-2 * Math.PI, 2 * Math.PI));
 		
-		/*try{
+		try{
 			DEAlgorithm de = new DEAlgorithm(birdRPN, 50, birdDimensions, Operation.Minimize, 0.5, 0.1);
 			
 			for(int i = 0; i < 100; i++){
 				de.makeIteration();
 			}
 			
-			de.printResults();
+			double[][] result = de.getValuesAndVariables();
+					
+			for(int i = 0; i < result.length; ++i){
+				for(int j = 0; j < result[i].length; ++j){
+
+					System.out.print(result[i][j] + " ");
+				}
+				System.out.println();
+			}
+			
+			/*de.printResults();*/
 			
 			HashMap<String, Double> b = de.getBestPosition();
 			System.out.println("Bird: Best value: " + de.getBestValue());
@@ -39,7 +49,9 @@ public class Main {
 				System.out.print(b.get(key) + " ");
 			}
 		}
-		catch(Exception ex) { }*/
+		catch(Exception ex) { }
+		
+		
 		
 		
 		try {
@@ -113,6 +125,16 @@ public class Main {
 		for(int i = 0; i < 50; ++i){
 			birdSwarm.makeIteration();
 			
+		}
+		
+		double[][] result = birdSwarm.getValuesAndVariables();
+		
+		for(int i = 0; i < result.length; ++i){
+			for(int j = 0; j < result[i].length; ++j){
+
+				System.out.print(result[i][j] + " ");
+			}
+			System.out.println();
 		}
 		
 		System.out.println("Bird: Best value: " + birdSwarm.getBestKnownValue());

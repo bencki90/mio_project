@@ -8,4 +8,5 @@ public interface IEvolutionaryAlgorithm {
 	public Individual[] getPopulation();
 	public double getBestValue();
 	public HashMap<String, Double> getBestPosition();
+	public double[][] getValuesAndVariables();
 }

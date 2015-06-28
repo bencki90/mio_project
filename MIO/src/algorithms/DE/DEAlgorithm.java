@@ -174,4 +174,21 @@ public class DEAlgorithm implements IEvolutionaryAlgorithm{
 		}
 	}
 	
+	@Override
+	public double[][] getValuesAndVariables() {
+		double[][] result = new double[this.population.length][];
+		for(int i = 0; i < this.population.length; ++i){
+			result[i] = new double[this.dimensions.size() + 1];
+			try{
+				result[i][0] = fitnessFunction(this.population[i].getPosition());
+			}catch(Exception ex) {}
+
+			int j = 0;
+			for(String key : this.dimensions.keySet()){
+				result[i][++j] = this.population[i].getPosition(key);
+			}
+		}
+		return result;
+	}
+	
 }

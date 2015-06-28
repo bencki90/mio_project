@@ -160,4 +160,21 @@ public class Swarm implements IEvolutionaryAlgorithm {
 	public HashMap<String, Double> getBestPosition() {
 		return getBestKnownPosition();
 	}
+
+	@Override
+	public double[][] getValuesAndVariables() {
+		double[][] result = new double[this.particles.length][];
+		for(int i = 0; i < this.particles.length; ++i){
+			result[i] = new double[this.dimensions.size() + 1];
+			try{
+				result[i][0] = fitnessFunction(this.particles[i].getPosition());
+			}catch(Exception ex) {}
+
+			int j = 0;
+			for(String key : this.dimensions.keySet()){
+				result[i][++j] = this.particles[i].getPosition(key);
+			}
+		}
+		return result;
+	}
 }
